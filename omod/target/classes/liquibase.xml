@@ -1,0 +1,68 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+ 
+    <!--
+    	See http://wiki.openmrs.org/display/docs/Module+liquibase+File for 
+    	documentation on this file.
+    
+        See http://www.liquibase.org/manual/home#available_database_refactorings
+        for a list of supported elements and attributes
+    -->
+ 
+ <changeSet id="amrscomplexobs 2013-03-25" author="akwatuha">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="amrscomplexobs"/></not>
+		</preConditions>
+		<comment>
+			Creating the amrscomplexobs table
+		</comment>
+		
+  <createTable tableName="amrscomplexobs">
+		
+	<column name="amrscomplexobs_id" type="int(11)">
+	    <constraints primaryKey="true" nullable="false"/>
+    </column>
+<column name="creator" type="int(11)" defaultValue="0">
+<constraints nullable="false" /></column>
+<column name="datecreated" type="datetime">
+				<constraints nullable="true" />
+</column>
+<column name="voided" type="smallint(6)" defaultValue="0">
+				<constraints nullable="false" />
+</column>
+<column name="voided_by" type="int(11)">
+				<constraints nullable="true" />
+</column>
+<column name="date_voided" type="datetime">
+				<constraints nullable="true" />
+</column>
+<column name="void_reason" type="varchar(255)">
+				<constraints nullable="true" />
+</column>
+<column name="uuid" type="char(38)">
+<constraints nullable="false" /></column></createTable>
+
+<createIndex tableName="amrscomplexobs" indexName="uuid">
+			<column name="uuid" />
+		</createIndex>
+</changeSet>
+<changeSet id="amrscomplexobsautoicrement  2013-03-25" author="akwatuha">
+    <addAutoIncrement tableName="amrscomplexobs" columnName="amrscomplexobs_id" columnDataType="int"/>
+</changeSet>
+<changeSet id="amrscomplexobs-2013-03-25 amrscomplexobs uuid " author="kwatuha">
+		<preConditions onFail="MARK_RAN">
+		<dbms type="mysql" />
+	</preConditions>
+<comment>Generating UUID row in amrscomplexobs table via built in uuid function.</comment>
+		<update tableName="amrscomplexobs">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql">
+			<replace replace="name-of-uuid-function" with="UUID()" />
+		</modifySql>
+	</changeSet>
+	
+</databaseChangeLog>
