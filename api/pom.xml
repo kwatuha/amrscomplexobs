@@ -37,5 +37,15 @@
 			<type>pom</type>
 		</dependency>
 
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>htmlwidgets</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>xforms</artifactId>
+        </dependency>
+
 	</dependencies>
 </project>

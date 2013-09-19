@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>
+<class name="org.openmrs.module.amrscomplexobs.model.AmrsPersonTypeFields" table="amrs_person_type_fields">
+ <cache usage="read-write"/>
+
+		<id name="id" type="int"  column="amrs_person_type_field_id"  unsaved-value="0">
+		<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
+		</id>
+		
+
+<property name="fieldLocalName" type="java.lang.String"	column="field_local_name" length="255" />
+<property name="description" type="java.lang.String"	column="description" length="255" />
+
+<property name="tableName" type="java.lang.String"	column="table_name" length="255" />
+
+    <many-to-one name="fieldType" class="org.openmrs.FieldType" not-null="true"><column name="field_type" /></many-to-one>
+    <many-to-one name="amrsPersonType" class="org.openmrs.module.amrscomplexobs.model.AmrsPersonType" column="person_type" />
+    <many-to-one name="concept" class="org.openmrs.Concept" column="concept_id" />
+
+    <property name="attributeName" type="java.lang.String"
+              column="attribute_name" length="50" />
+
+    <property name="defaultValue" type="java.lang.String" column="default_value" length="65535" />
+
+    <property name="selectMultiple" type="boolean" column="select_multiple" length="1" not-null="true"/>
+
+	<many-to-one name="creator" class="org.openmrs.User" column="creator" not-null="true" />
+
+	<property name="dateCreated" type="java.util.Date" column="datecreated" not-null="true" />
+
+	<property name="voided" type="boolean" not-null="true" />
+
+    <many-to-one name="voidedBy" class="org.openmrs.User"
+			column="voided_by" />
+
+		<property name="dateVoided" type="java.util.Date" column="date_voided" />
+		<property name="voidReason" type="java.lang.String" column="void_reason"
+			length="255" />
+			
+<property name="uuid" type="java.lang.String" length="38" not-null="true" unique="true" /></class>
+</hibernate-mapping>

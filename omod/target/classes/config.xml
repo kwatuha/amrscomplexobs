@@ -58,10 +58,66 @@
 		<file>messages.properties</file>
 	</messages>
 	<mappingFiles>
-		Amrscomplexobs.hbm.xml
+		Amrscomplexconcepthandler.hbm.xml
+AmrsPersontypeConcept.hbm.xml
+ComplexConceptFields.hbm.xml
+AmrsPersonTypeFormFields.hbm.xml
+AmrsPersontypeHandler.hbm.xml
+AmrsPersonType.hbm.xml
+AmrsPersontypeAttributes.hbm.xml
+Amrscomplexobs.hbm.xml
+AmrsPersonTypeFields.hbm.xml
 
 	</mappingFiles>
 	<!-- /logic Module Properties -->
-	 
-	
+    <advice>
+        <point>org.openmrs.module.xforms.XformsService</point>
+        <class>org.openmrs.module.amrscomplexobs.aop.ProcessObs</class>
+    </advice>
+    <advice>
+        <point>org.openmrs.api.FormService</point>
+        <class>org.openmrs.module.amrscomplexobs.aop.FormFieldSaveAdvice</class>
+    </advice>
+
+    <!-- DWR -->
+    <dwr>
+        <allow>
+            <create creator="new" javascript="DWRAMRSComplexObsService">
+                <param name="class" value="org.openmrs.module.amrscomplexobs.web.DWRAMRSComplexObsService"/>
+                <include method="getPersonAttributes"/>
+                <include method="saveFormFields"/>
+                <include method="savePersonAttributes"/>
+                <include method="saveNewPersonFields"/>
+
+                <include method="saveAmrsPersontypeAttributes"/>
+                <include method="saveAmrsPersontypeConcept"/>
+                <include method="saveAmrsPersonType"/>
+                <include method="saveAmrsPersontypeHandler"/>
+                <include method="saveAmrscomplexconcepthandler"/>
+
+
+            </create>
+            <convert converter="bean" match="org.openmrs.module.amrscomplexobs.PersonAttributeType"/>
+
+
+        </allow>
+
+        <signatures>
+            <![CDATA[
+			import org.openmrs.module.amrscomplexobs.web.DWRAMRSComplexObsService;
+				DWRAMRSComplexObsService.getPersonAttributes();
+				DWRAMRSComplexObsService.saveFormFields(Integer fieldType,String conceptName,String tableName,String attributeName,String defaultValue,Boolean selectMultiple,String fieldName,String handlerName);
+                DWRAMRSComplexObsService.savePersonAttributes(String attributeUuid,String personTypeUuid);
+                DWRAMRSComplexObsService.saveNewPersonFields(String formOpeMRStag,String personTypeUuid);
+
+                DWRAMRSComplexObsService.saveAmrsPersontypeAttributes(Integer persontypeid,Integer  openmrsattributeid);
+                DWRAMRSComplexObsService.saveAmrsPersontypeConcept(  Integer  persontypeid,Integer conceptid);
+                DWRAMRSComplexObsService.saveAmrsPersonType(String  persontypename,String  description);
+                DWRAMRSComplexObsService.saveAmrsPersontypeHandler(String handleruuid, String personTypeUuid);
+                 DWRAMRSComplexObsService.saveAmrscomplexconcepthandler(String  handlername);
+			]]>
+        </signatures>
+    </dwr>
+
+
 </module>

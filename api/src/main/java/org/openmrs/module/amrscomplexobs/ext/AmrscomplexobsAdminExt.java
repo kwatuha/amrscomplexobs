@@ -25,8 +25,12 @@ public class AmrscomplexobsAdminExt extends AdministrationSectionExt {
 		
 		
 map.put("module/amrscomplexobs/amrscomplexobs.form", "Amrscomplexobs ");
+map.put("module/amrscomplexobs/complexConceptFields.form", "Enty Fields");
+map.put("module/amrscomplexobs/amrscomplexconcepthandler.form", "Handlers");
+map.put("module/amrscomplexobs/amrscomplexHandlerFields.form", "Handler Fields");
+map.put("module/amrscomplexobs/fields.list", "List Fields");
 
-return map;
+        return map;
 	}
 
 	/*

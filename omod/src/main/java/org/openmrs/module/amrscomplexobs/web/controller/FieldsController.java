@@ -2,14 +2,14 @@ package org.openmrs.module.amrscomplexobs.web.controller;
 
 import org.openmrs.Concept;
 import org.openmrs.FieldType;
-import org.openmrs.Form;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.amrscomplexobs.OpenMRSTableFields;
-import org.openmrs.module.amrscomplexobs.model.Amrscomplexconcepthandler;
+import org.openmrs.module.amrscomplexobs.model.AmrsComplexHandler;
+import org.openmrs.module.amrscomplexobs.model.AmrsPersonType;
 import org.openmrs.module.amrscomplexobs.model.ComplexConceptFields;
 import org.openmrs.module.amrscomplexobs.service.AmrscomplexobsService;
 import org.openmrs.module.amrscomplexobs.util.AMRSComplexObsUtil;
@@ -40,16 +40,15 @@ public void pageLoad(ModelMap map){
 
     List<Concept> listConcepts=cservice.getAllConcepts();
     List<OpenMRSTableFields>listNewPersonFields= AMRSComplexObsUtil.getListDefaultNewPersonFields();
-
-    List<Amrscomplexconcepthandler> listAmrscomplexconcepthandler=service.getAmrscomplexconcepthandler();
-         map.addAttribute("listAmrshandler",listAmrscomplexconcepthandler);
+    List<AmrsPersonType> listAmrsPersonType=service.getAmrsPersonType();
+    List<AmrsComplexHandler> listAmrsComplexHandler =service.getAmrscomplexconcepthandler();
+         map.addAttribute("listAmrshandler", listAmrsComplexHandler);
          map.addAttribute("listComplexConceptFields",listComplexConceptFields);
          map.addAttribute("listFieldTypes",listFieldTypes);
 
          map.addAttribute("listConcepts",listConcepts);
          map.addAttribute("listNewPersonFields",listNewPersonFields);
-
-
+         map.addAttribute("listAmrsPersonTypes",listAmrsPersonType);
 	}
 
 @RequestMapping(method=RequestMethod.POST, value="module/amrscomplexobs/fields")
@@ -75,10 +74,10 @@ public void pageLoad(ModelMap map){
         List<ComplexConceptFields> listComplexConceptFields=service.getComplexConceptFields();
         List<FieldType> listFieldTypes=formService.getAllFieldTypes();
         List<Concept> listConcepts=cservice.getAllConcepts();
-        List<Amrscomplexconcepthandler> listAmrscomplexconcepthandler=service.getAmrscomplexconcepthandler();
+        List<AmrsComplexHandler> listAmrsComplexHandler =service.getAmrscomplexconcepthandler();
         List<OpenMRSTableFields>listNewPersonFields= AMRSComplexObsUtil.getListDefaultNewPersonFields();
 
-        map.addAttribute("listAmrshandler",listAmrscomplexconcepthandler);
+        map.addAttribute("listAmrshandler", listAmrsComplexHandler);
         map.addAttribute("listComplexConceptFields",listComplexConceptFields);
         map.addAttribute("listFieldTypes",listFieldTypes);
         map.addAttribute("listConcepts",listConcepts);

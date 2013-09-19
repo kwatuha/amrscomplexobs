@@ -6,7 +6,7 @@
     <!--
     	See http://wiki.openmrs.org/display/docs/Module+liquibase+File for 
     	documentation on this file.
-    
+                                    amrscomplexobs 2013-03-25
         See http://www.liquibase.org/manual/home#available_database_refactorings
         for a list of supported elements and attributes
     -->
@@ -24,25 +24,35 @@
 	<column name="amrscomplexobs_id" type="int(11)">
 	    <constraints primaryKey="true" nullable="false"/>
     </column>
-<column name="creator" type="int(11)" defaultValue="0">
-<constraints nullable="false" /></column>
-<column name="datecreated" type="datetime">
-				<constraints nullable="true" />
-</column>
-<column name="voided" type="smallint(6)" defaultValue="0">
-				<constraints nullable="false" />
-</column>
-<column name="voided_by" type="int(11)">
-				<constraints nullable="true" />
-</column>
-<column name="date_voided" type="datetime">
-				<constraints nullable="true" />
-</column>
-<column name="void_reason" type="varchar(255)">
-				<constraints nullable="true" />
-</column>
-<column name="uuid" type="char(38)">
-<constraints nullable="false" /></column></createTable>
+      <column name="concept_data" type="varchar(255)"/>
+      <column name="concept_id" type="int(11)"/>
+      <column name="form_id" type="varchar(20)"/>
+      <column name="location_id" type="int(11)"/>
+      <column name="patient_id" type="int(11)"/>
+      <column name="provider_id" type="int(11)"/>
+
+      <column name="encounter_datetime" type="datetime">
+      <constraints nullable="true" /></column>
+
+        <column name="creator" type="int(11)" defaultValue="0">
+        <constraints nullable="false" /></column>
+        <column name="datecreated" type="datetime">
+                        <constraints nullable="true" />
+        </column>
+        <column name="voided" type="smallint(6)" defaultValue="0">
+                        <constraints nullable="false" />
+        </column>
+        <column name="voided_by" type="int(11)">
+                        <constraints nullable="true" />
+        </column>
+        <column name="date_voided" type="datetime">
+                        <constraints nullable="true" />
+        </column>
+        <column name="void_reason" type="varchar(255)">
+                        <constraints nullable="true" />
+        </column>
+        <column name="uuid" type="char(38)">
+        <constraints nullable="false" /></column></createTable>
 
 <createIndex tableName="amrscomplexobs" indexName="uuid">
 			<column name="uuid" />
@@ -64,5 +74,466 @@
 			<replace replace="name-of-uuid-function" with="UUID()" />
 		</modifySql>
 	</changeSet>
-	
+
+
+    <changeSet id="complexConceptFields 2013-08-08" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="complex_concept_fields"/></not>
+        </preConditions>
+        <comment>
+            Creating the complex_concept_fields table
+        </comment>
+
+        <createTable tableName="complex_concept_fields">
+
+            <column name="complex_field_id" type="int(11)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="field_id" type="int(11)"/>
+            <column name="concept_id" type="int(11)"/>
+            <column name="form_id" type="int(11)"/>
+            <column name="field_name" type="varchar(100)"/>
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false" /></column>
+            <column name="datecreated" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="voided" type="smallint(6)" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="voided_by" type="int(11)">
+                <constraints nullable="true" />
+            </column>
+            <column name="date_voided" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="void_reason" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" /></column></createTable>
+
+        <createIndex tableName="complex_concept_fields" indexName="uuid">
+            <column name="uuid" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="complexConceptFieldsautoicrement  2013-08-08" author="akwatuha">
+        <addAutoIncrement tableName="complex_concept_fields" columnName="complex_field_id" columnDataType="int"/>
+    </changeSet>
+    <changeSet id="2013-08-08 complex fields uuid " author="kwatuha">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql" />
+        </preConditions>
+        <comment>Generating UUID row in ccfields table via built in uuid function.</comment>
+        <update tableName="complex_concept_fields">
+            <column name="uuid" valueNumeric="name-of-uuid-function" />
+            <where>uuid is null</where>
+        </update>
+        <modifySql dbms="mysql">
+            <replace replace="name-of-uuid-function" with="UUID()" />
+        </modifySql>
+    </changeSet>
+
+   <!-- New Database fields-->
+    <changeSet id="Person Type Fields 2013-08-14" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="amrs_person_type_fields"/></not>
+        </preConditions>
+        <comment>
+            Creating the amrs_person_type_fields table
+        </comment>
+
+        <createTable tableName="amrs_person_type_fields">
+
+            <column name="amrs_person_type_field_id" type="int(11)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="person_type" type="int(11)"/>
+            <column name="field_type" type="int(11)"/>
+            <column name="concept_id" type="int(11)"/>
+            <column name="field_local_name" type="varchar(100)"/>
+            <column name="description" type="varchar(250)"/>
+            <column name="attribute_name" type="varchar(100)"/>
+            <column name="default_value" type="varchar(100)"/>
+            <column name="select_multiple" type="int(2)"/>
+            <column name="table_name" type="varchar(100)"/>
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false" /></column>
+            <column name="datecreated" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="voided" type="smallint(6)" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="voided_by" type="int(11)">
+                <constraints nullable="true" />
+            </column>
+            <column name="date_voided" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="void_reason" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" /></column></createTable>
+
+        <createIndex tableName="amrs_person_type_fields" indexName="uuid">
+            <column name="uuid" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="Person Type Fields AI 2013-08-14" author="akwatuha">
+        <addAutoIncrement tableName="amrs_person_type_fields" columnName="amrs_person_type_field_id" columnDataType="int"/>
+    </changeSet>
+    <changeSet id="PTF 2013-08-14  uuid persontype" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql" />
+        </preConditions>
+        <comment>Generating UUID row in ACC table via built in function.</comment>
+        <update tableName="amrs_person_type_fields">
+            <column name="uuid" valueNumeric="name-of-uuid-function" />
+            <where>uuid is null</where>
+        </update>
+        <modifySql dbms="mysql">
+            <replace replace="name-of-uuid-function" with="UUID()" />
+        </modifySql>
+    </changeSet>
+
+    <changeSet id="amrsComplexHandler 2013-08-14" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="amrsComplexHandler"/></not>
+        </preConditions>
+        <comment>
+            Creating the amrsComplexHandler table
+        </comment>
+
+        <createTable tableName="amrs_complex_concept_handler">
+
+            <column name="complex_handler_id" type="int(11)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="handler_name" type="varchar(100)"/>
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false" /></column>
+            <column name="datecreated" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="voided" type="smallint(6)" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="voided_by" type="int(11)">
+                <constraints nullable="true" />
+            </column>
+            <column name="date_voided" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="void_reason" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" /></column></createTable>
+
+        <createIndex tableName="amrs_complex_concept_handler" indexName="uuid">
+            <column name="uuid" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="Concept handlerautoicrement  2013-08-14" author="akwatuha">
+        <addAutoIncrement tableName="amrs_complex_concept_handler" columnName="complex_handler_id" columnDataType="int"/>
+    </changeSet>
+    <changeSet id="Cmpx handler-2013-08-14  uuid " author="kwatuha">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql" />
+        </preConditions>
+        <comment>Generating UUID row in concept handler function.</comment>
+        <update tableName="amrs_complex_concept_handler">
+            <column name="uuid" valueNumeric="name-of-uuid-function" />
+            <where>uuid is null</where>
+        </update>
+        <modifySql dbms="mysql">
+            <replace replace="name-of-uuid-function" with="UUID()" />
+        </modifySql>
+    </changeSet>
+
+
+    <changeSet id="amrsPersonType 2013-09-09" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="amrs_person_type"/></not>
+        </preConditions>
+        <comment>
+            Creating the amrs_person_type table
+        </comment>
+
+        <createTable tableName="amrs_person_type">
+
+            <column name="person_type_id" type="int(11)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="person_type_name" type="varchar(100)"/>
+            <column name="description" type="varchar(100)"/>
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false" /></column>
+            <column name="datecreated" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="voided" type="smallint(6)" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="voided_by" type="int(11)">
+                <constraints nullable="true" />
+            </column>
+            <column name="date_voided" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="void_reason" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" /></column></createTable>
+
+        <createIndex tableName="amrs_person_type" indexName="uuid">
+            <column name="uuid" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="amrsPersonType AI  2013-09-09" author="akwatuha">
+        <addAutoIncrement tableName="amrs_person_type" columnName="person_type_id" columnDataType="int"/>
+    </changeSet>
+    <changeSet id="amrsPersonType-2013-09-09 amrs_person_type uuid " author="kwatuha">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql" />
+        </preConditions>
+        <comment>Generating UUID row in amrs_person_type table</comment>
+        <update tableName="amrs_person_type">
+            <column name="uuid" valueNumeric="name-of-uuid-function" />
+            <where>uuid is null</where>
+        </update>
+        <modifySql dbms="mysql">
+            <replace replace="name-of-uuid-function" with="UUID()" />
+        </modifySql>
+    </changeSet>
+
+    <changeSet id="amrsPersontypeAttributes 2013-09-09" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="amrs_persontype_attributes"/></not>
+        </preConditions>
+        <comment>
+            Creating the amrs_persontype_attributes table
+        </comment>
+
+        <createTable tableName="amrs_persontype_attributes">
+
+            <column name="person_type_attr_id" type="int(11)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="person_type_id" type="int(11)"/>
+            <column name="openmrs_attribute_id" type="int(11)"/>
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false" /></column>
+            <column name="datecreated" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="voided" type="smallint(6)" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="voided_by" type="int(11)">
+                <constraints nullable="true" />
+            </column>
+            <column name="date_voided" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="void_reason" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" /></column></createTable>
+
+        <createIndex tableName="amrs_persontype_attributes" indexName="uuid">
+            <column name="uuid" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="amrsPersontypeAttributes AI  2013-09-09" author="akwatuha">
+        <addAutoIncrement tableName="amrs_persontype_attributes" columnName="person_type_attr_id" columnDataType="int"/>
+    </changeSet>
+    <changeSet id="amrsPersontypeAttributes-2013-09-09  uuid " author="kwatuha">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql" />
+        </preConditions>
+        <comment>Generating UUID row in amrs_persontype_attributes table</comment>
+        <update tableName="amrs_persontype_attributes">
+            <column name="uuid" valueNumeric="name-of-uuid-function" />
+            <where>uuid is null</where>
+        </update>
+        <modifySql dbms="mysql">
+            <replace replace="name-of-uuid-function" with="UUID()" />
+        </modifySql>
+    </changeSet>
+
+    <changeSet id="amrsPersontypeConcept 2013-09-09" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="amrs_persontype_concept"/></not>
+        </preConditions>
+        <comment>
+            Creating the amrs_persontype_concept table
+        </comment>
+
+        <createTable tableName="amrs_persontype_concept">
+
+            <column name="person_type_attr_id" type="int(11)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="person_type_id" type="int(11)"/>
+            <column name="concept_id" type="int(11)"/>
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false" /></column>
+            <column name="datecreated" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="voided" type="smallint(6)" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="voided_by" type="int(11)">
+                <constraints nullable="true" />
+            </column>
+            <column name="date_voided" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="void_reason" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" /></column></createTable>
+
+        <createIndex tableName="amrs_persontype_concept" indexName="uuid">
+            <column name="uuid" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="amrsPersontypeConcept AI 2013-09-09" author="akwatuha">
+        <addAutoIncrement tableName="amrs_persontype_concept" columnName="person_type_attr_id" columnDataType="int"/>
+    </changeSet>
+    <changeSet id="amrsPersontypeConcept-2013-09-09 uuid " author="kwatuha">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql" />
+        </preConditions>
+        <comment>Generating UUID row in amrs_persontype_concept table via built in uuid function.</comment>
+        <update tableName="amrs_persontype_concept">
+            <column name="uuid" valueNumeric="name-of-uuid-function" />
+            <where>uuid is null</where>
+        </update>
+        <modifySql dbms="mysql">
+            <replace replace="name-of-uuid-function" with="UUID()" />
+        </modifySql>
+    </changeSet>
+
+    <changeSet id="amrsPersontypeHandler 2013-09-09" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="amrs_persontype_handler"/></not>
+        </preConditions>
+        <comment>
+            Creating the amrs_persontype_handler table
+        </comment>
+
+        <createTable tableName="amrs_persontype_handler">
+
+            <column name="person_handler_id" type="int(11)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="handler_id" type="int(11)"/>
+            <column name="person_type_id" type="int(11)"/>
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false" /></column>
+            <column name="datecreated" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="voided" type="smallint(6)" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="voided_by" type="int(11)">
+                <constraints nullable="true" />
+            </column>
+            <column name="date_voided" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="void_reason" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" /></column></createTable>
+
+        <createIndex tableName="amrs_persontype_handler" indexName="uuid">
+            <column name="uuid" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="amrsPersontypeHandler AI 2013-09-09" author="akwatuha">
+        <addAutoIncrement tableName="amrs_persontype_handler" columnName="person_handler_id" columnDataType="int"/>
+    </changeSet>
+    <changeSet id="amrsPersontypeHandler-2013-09-09 uuid " author="kwatuha">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql" />
+        </preConditions>
+        <comment>Generating UUID row in amrs_persontype_handler table via built in uuid function.</comment>
+        <update tableName="amrs_persontype_handler">
+            <column name="uuid" valueNumeric="name-of-uuid-function" />
+            <where>uuid is null</where>
+        </update>
+        <modifySql dbms="mysql">
+            <replace replace="name-of-uuid-function" with="UUID()" />
+        </modifySql>
+    </changeSet>
+
+
+    <changeSet id="Person Type FormFields 2013-09-17" author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="amrs_person_type_formfields"/></not>
+        </preConditions>
+        <comment>
+            Creating the amrs_person_type_formfields table
+        </comment>
+
+        <createTable tableName="amrs_person_type_formfields">
+
+            <column name="amrs_persontype_formfield_id" type="int(11)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="person_type" type="int(11)"/>
+
+            <column name="form_id" type="int(11)"/>
+
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false" /></column>
+            <column name="datecreated" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="voided" type="smallint(6)" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="voided_by" type="int(11)">
+                <constraints nullable="true" />
+            </column>
+            <column name="date_voided" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="void_reason" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" /></column></createTable>
+
+        <createIndex tableName="amrs_person_type_formfields" indexName="uuid">
+            <column name="uuid" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="Person Type Form Fields AI 2013-09-17" author="akwatuha">
+        <addAutoIncrement tableName="amrs_person_type_formfields" columnName="amrs_persontype_formfield_id" columnDataType="int"/>
+    </changeSet>
+    <changeSet id="Amrs complexobs PTFF 2013-09-17  uuid " author="akwatuha">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql" />
+        </preConditions>
+        <comment>Generating UUID row in ACC table via built in function.</comment>
+        <update tableName="amrs_person_type_formfields">
+            <column name="uuid" valueNumeric="name-of-uuid-function" />
+            <where>uuid is null</where>
+        </update>
+        <modifySql dbms="mysql">
+            <replace replace="name-of-uuid-function" with="UUID()" />
+        </modifySql>
+    </changeSet>
 </databaseChangeLog>

@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 <openmrs:require privilege="Manage Amrscomplexobshandler" otherwise="/login.htm"
-	redirect="/module/amrscomplexobs/amrscomplexconcepthandler.form" />
+	redirect="/module/amrscomplexobs/amrsComplexHandler.form" />
 	<%-- <%@ include file="localHeader.jsp"%> --%>
 <openmrs:htmlInclude file="/moduleResources/amrscomplexobs/scripts/jquery.js" />
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css"/>
@@ -63,7 +63,7 @@
 <th class="tdClass">Action</th>
 </tr></thead>
 <tbody>
-					<c:forEach var="amrscomplexconcepthandlervar"  items="${listAmrscomplexconcepthandler}" varStatus="encIndex" >
+					<c:forEach var="amrscomplexconcepthandlervar"  items="${listAmrsComplexHandler}" varStatus="encIndex" >
 						<form method="POST" name="${amrscomplexconcepthandlervar.uuid}">
 						<tr>
 						<td class="tdClass">${encIndex.index + 1}</td><td class="tbClass">${amrscomplexconcepthandlervar.handlerName}</td><td class="tdClass"><input type="hidden" name="amrscomplexconcepthandlertbl" id="amrscomplexconcepthandlertbl" value="${amrscomplexconcepthandlervar.uuid}" />

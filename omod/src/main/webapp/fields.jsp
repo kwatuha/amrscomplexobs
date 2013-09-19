@@ -144,7 +144,7 @@ $j(document).ready(function () {
 
     if (eTable == null) {
 
-        eTable = $j("#errorTable").dataTable({
+        eTable = $j("#openmrsAttributesTable").dataTable({
             bAutoWidth: false,
             bDeferRender: true,
             bJQueryUI: true,
@@ -162,26 +162,11 @@ $j(document).ready(function () {
                         return '<input name="checkedFieldIDs" type="checkbox" value="' + uuid + '"/>';
                     }
                 },
-                {
-                    aTargets: [1],
-                    sClass: "centered",
-                   mData: null,
-                    mRender: function (data, type, full) {
-                      var id = full.id;
 
-                        var out = "";
-                        if (full.comment) {
-                            out += '<button class="action resolve" errorId="' + 8 + '">Resolve</button>';
-                        } else {
-                            out += '<button class="action comment" errorId="' + 9 + '">Comment</button>';
-                        }
-                        return out;
-                    }
-                },
-                { aTargets: [2], mData: "id" },
-                { aTargets: [3], mData: "name"},
-                { aTargets: [4], mData: "attributeTypeId" },
-                { aTargets: [5], mData: "description"}
+                { aTargets: [1], mData: "id" },
+                { aTargets: [2], mData: "name"},
+                { aTargets: [3], mData: "attributeTypeId" },
+                { aTargets: [4], mData: "description"}
             ],
             bProcessing: true,
             bServerSide: true,
@@ -208,6 +193,7 @@ $j(document).ready(function () {
     }
     //hide default view
     $j("#addConcept").hide();
+    $j("#addOtherAttributes").hide();
     // TODO revise the savePersonAttributes to receive list of attribute uuids to process
     $j("input[name=ShowSelectedFields]").live("click", function () {
         //DO Do
@@ -215,15 +201,15 @@ $j(document).ready(function () {
         $j("input[name=checkedFieldIDs]:checked").each(function () {
             params.push( $j(this).val());
             var attributeTypeUuid=$j(this).val();
-            var handlerUuid=$j("#amrsHandlerId").val();
-            DWRAMRSComplexObsService.savePersonAttributes(attributeTypeUuid, handlerUuid, showResponseAttr);
+            var personTypeUuid=$j("#OtherAttriPersonTypeId").val();
+            DWRAMRSComplexObsService.savePersonAttributes(attributeTypeUuid, personTypeUuid, showResponseAttr);
 
         });
-        /*if(params.length>0) {
-            var handlerUuid=$j("#amrsHandlerId").val();
-            DWRAMRSComplexObsService.savePersonAttributes(params, handlerUuid, showResponse);
+        if(params.length>0) {
+            var personTypeUuid=$j("#OtherAttriPersonTypeId").val();
+            //DWRAMRSComplexObsService.savePersonAttributes(params, personTypeUuid, showResponse);
 
-        }*/
+        }
 
 
     });
@@ -270,20 +256,25 @@ function clearElements(){
 
     (function($j){
         $jcountForms = 1;
-        $j.fn.addForms = function(){
+        $j.fn.addFormpersonTypeHandler= function(){
             var myform = "<fieldset class='visualPadding'>"+
-                    "<legend>Define Handler</legend><table>"+
-                    "  <tr>"+
-                    "     <td>Field A ("+$jcountForms+"):</td>"+
-                    "     <td><input type='text' name='fielda["+$jcountForms+"]'></td>"+
-                    "     <td>Field B ("+$jcountForms+"):</td>"+
-                    "     <td><textarea name='fieldb["+$jcountForms+"]'></textarea></td>"+
-                    "     <td><button>remove</button></td>"+
-                    "     <tr><td>AMRS Handler</td><td><select name='amrsHandlerId' id='amrsHandlerId'>"+
+                    "<legend>Define Person Type Handler</legend><table>"+
+                    "<tr><td>Person Type</td>"+
+                    "<td><select name='ptPersonTypeId' id='ptPersonTypeId'>"+
+                    "<c:forEach var='amrspersonType' items='${listAmrsPersonTypes}' varStatus='ind'>"+
+                    "<option id='${amrspersonType.uuid}' value='${amrspersonType.uuid}'>${amrspersonType.personTypeName}</option>"+
+                    "</c:forEach>"+
+                    "</select></td>"+
+                    "</tr>"+
+                    "<tr><td>AMRS Handler</td><td><select name='amrsHandlerId' id='ptamrsHandlerId'>"+
                     "<c:forEach var='amrsHandler' items='${listAmrshandler}' varStatus='ind'> "+
                     "<option id='${amrsHandler.uuid}' value='${amrsHandler.uuid}'>${amrsHandler.handlerName}</option> "+
                     "</c:forEach> "+
                     "</select></td></tr>" +
+                    "  <tr>"+
+                    "     <td>&nbsp</td>"+
+                    "     <td><input type='button' value='Save' onclick='savePersonTypeHandler()'/></td>"+
+                    "</tr>" +
                     "</table></fieldset>";
 
             myform = $j("<div>"+myform+"</div>");
@@ -295,18 +286,29 @@ function clearElements(){
     })(jQuery);
 
     $j(function(){
-        $j("#handlerLink").bind("click", function(){
+        $j("#personTypeHandler").bind("click", function(){
             $j("#addConcept").hide();
-            $j("#showHtml").addForms();
+            $j("#addOtherAttributes").hide();
+            $j("#showHtml").empty();
+            $j("#showHtml").addFormpersonTypeHandler();
         });
     });
 
     (function($j){
         $jcountForms = 1;
-        $j.fn.addForms = function(){
+        $j.fn.addFormsRelatedPerson = function(){
             var myform = "<fieldset class='visualPadding'>"+
                     "<legend>Define Related Person</legend>"+
                     "<table>"+
+                    "<tr><td>Person Type</td>"+
+                    "<td><select name='paPersonTypeId' id='paPersonTypeId'>"+
+                    "<c:forEach var='amrspersonType' items='${listAmrsPersonTypes}' varStatus='ind'>"+
+                    "<option id='${amrspersonType.uuid}' value='${amrspersonType.uuid}'>${amrspersonType.personTypeName}</option>"+
+                    "</c:forEach>"+
+                    "</select></td>"+
+                   "</tr>"+
+
+
                             "<c:forEach var='personField' items='${listNewPersonFields}' varStatus='ind'> "+
                             "<tr>"+
                                 "<td><input checked='true' type='checkbox' name='personfieldcheckbox' value='${personField.opemrsTag}' />${personField.fieldCaption}</td>"+
@@ -314,10 +316,17 @@ function clearElements(){
                                 "<td><input type='text' readonly='true' id='${personField.opemrsTag}' value='${personField.opemrsTag}' /></td>"+
                                  "<td><input type='text' readonly='true' id='${personField.openmrsAttribute}' value='${personField.openmrsAttribute}' /></td>"+
                                 "<td><textarea   readonly='true' id='${personField.defaultValue}'>${personField.defaultValue}</textarea></td>"+
+                            "</tr>" +
 
-                            "</tr>"+
                            "</c:forEach>"+
-                    "<tr><td><input type='button' id='submitpersonfields' value='Save New Person Fields' /></td><td></td><td></td><td></td><td></td></tr>"+
+                                "<tr>"+
+                                "<td></td>"+
+                                "<td></td>"+
+                                "<td></td>"+
+                                "<td></td>"+
+                                "<td></td>"+
+                                "</tr>"+
+
                    "</table> "+
                    "</fieldset>";
             myform = $j("<div>"+myform+"</div>");
@@ -329,16 +338,17 @@ function clearElements(){
     })(jQuery);
 
     $j(function(){
-        $j("#newPersonLink").bind("click", function(){
+        $j("#newRelatedPersonAttributes").bind("click", function(){
             $j("#addConcept").hide();
-            $j("#showHtml").addForms();
+            $j("#showHtml").empty();
+            $j("#showHtml").addFormsRelatedPerson();
         });
     });
 
 
     //new person fields
 
-
+     //"<tr><td><input type='button' id='submitpersonfields' value='Save New Person Fields' /></td><td></td><td></td><td></td><td></td></tr>"+
 
     function saveHandlerFields() {
         var conceptName=$j("#conceptSearchTextField").val();
@@ -349,12 +359,12 @@ function clearElements(){
         var fieldType=$j('input[name=fieldTypeName]:checked', '#complexConceptFieldsform').val();
         var fieldName=$j("#field_name").val();
         var tableName=$j("#tableName").val();
-        var handlerName=$j("#amrsHandlerId").val();
+        var personType=$j("#cmpPersonTypeId").val();
 
 
         if(fieldType>0){
 
-         DWRAMRSComplexObsService.saveFormFields(fieldType,conceptName,tableName,attributeName,defaultValue,selectMultiple,fieldName,handlerName,description, showResponse);
+         DWRAMRSComplexObsService.saveFormFields(fieldType,conceptName,tableName,attributeName,defaultValue,selectMultiple,fieldName,personType,description, showResponse);
         }
    }
 
@@ -368,34 +378,159 @@ function clearElements(){
 
 
     $j(function(){
-        $j("#defaultView").bind("click", function(){
+        $j("#personTypeConcepts").bind("click", function(){
             $j("#showHtml").empty();
+            $j("#addOtherAttributes").hide();
              $j("#addConcept").show();
         });
     });
 
+    $j(function(){
+        $j("#personTypeOtherAttributes").bind("click", function(){
+            $j("#showHtml").empty();
+            $j("#addConcept").hide();
+            $j("#addOtherAttributes").show();
+        });
+    });
 
     $j(function(){
-        $j("#submitpersonfields").bind("click", function(){
+        $j("#submitnewpersonfields").bind("click", function(){
 
 
-                var tableFieldsList = [];
-                $j("input[name=personfieldcheckbox]:checked").each(function(){
-                    tableFieldsList.push($j(this).val());
-                });
-                var handlerName=$j("#amrsHandlerId").val();
+             var tableFieldsList = [];
+            var personTypeUuid=$j("#paPersonTypeId").val();
+             $j("input[name=personfieldcheckbox]:checked").each(function(){
+             tableFieldsList.push($j(this).val());
+                // alert($j(this).val());
+                 DWRAMRSComplexObsService.saveNewPersonFields($j(this).val(), personTypeUuid, showResponse);
+             });
 
-            personType='Neighbor' ;
-            if(tableFieldsList.length()>0){
-            DWRAMRSComplexObsService.saveNewPersonFields(tableFieldsList, handlerName, personType,${listAmrshandler},showResponse);
-            }
-            //
 
+             var personType='Neighbor' ;
+             if(tableFieldsList.length>0){
+               //  alert("Here in") ;
+            // DWRAMRSComplexObsService.saveNewPersonFields(tableFieldsList, handlerName, showResponse);
+             }
+             //
 
 
         });
     });
 
+
+
+
+
+    //New person type
+
+    (function($j){
+        $jcountForms = 1;
+        $j.fn.addFormsPersonType = function(){
+            var myform = "<fieldset class='visualPadding'>"+
+                    "<legend>Define Person Type</legend><table>"+
+                    "  <tr>"+
+                    "     <td>Person Type Name</td>"+
+                    "     <td><input type='text' id='amrs_person_type'></td>"+
+                    "</tr>" +
+                    "  <tr>"+
+                    "     <td>Description</td>"+
+                    "     <td><textarea id='amrs_person_type_description'/></td>"+
+                    "</tr>" +
+
+                    "  <tr>"+
+                    "     <td>&nbsp</td>"+
+                    "     <td><input type='button' value='Save PersonType' onclick='savePersonType()'/></td>"+
+                    "</tr>" +
+
+                    "</table></fieldset>";
+
+            myform = $j("<div>"+myform+"</div>");
+            $j("button", $j(myform)).click(function(){ $j(this).parent().parent().remove(); });
+
+            $j(this).append(myform);
+            $jcountForms++;
+        };
+    })(jQuery);
+
+    $j(function(){
+        $j("#newPersonTypeLink").bind("click", function(){
+            $j("#addConcept").hide();
+            $j("#showHtml").empty();
+            $j("#addOtherAttributes").hide();
+            $j("#showHtml").addFormsPersonType();
+        });
+    });
+
+function showpersontype(){
+    alert('Cliscked') ;
+}
+
+    //New handler
+
+    (function($j){
+        $jcountForms = 1;
+
+        $j.fn.addFormsHandler = function(){
+            var myform = "<fieldset class='visualPadding'>"+
+                    "<legend>Define Handler</legend><table>"+
+                    "  <tr>"+
+                    "     <td>Handler Name</td>"+
+                    "     <td><input type='text' id='amrscomplexhandler'></td>"+
+                    "</tr>" +
+                    "  <tr>"+
+                    "     <td>&nbsp</td>"+
+                    "     <td><input type='button' value='Save' onclick='saveAMRSHandler()'></td>"+
+                    "</tr>" +
+                    "</table></fieldset>";
+
+            myform = $j("<div>"+myform+"</div>");
+            $j("button", $j(myform)).click(function(){ $j(this).parent().parent().remove(); });
+
+            $j(this).append(myform);
+            $jcountForms++;
+        };
+    })(jQuery);
+
+    $j(function(){
+        $j("#newhandlerLink").bind("click", function(){
+            $j("#addConcept").hide();
+            $j("#showHtml").empty();
+            $j("#addOtherAttributes").hide();
+            $j("#showHtml").addFormsHandler();
+        });
+    });
+
+    function saveAMRSHandler(){
+
+        var amrscomplexhandler=$j("#amrscomplexhandler").val();
+        if(amrscomplexhandler){
+
+            DWRAMRSComplexObsService.saveAmrscomplexconcepthandler(amrscomplexhandler, showResponse);
+        }
+
+    }
+
+    function savePersonType(){
+
+        var persontypename=$j("#amrs_person_type").val();
+        var description=$j("#amrs_person_type_description").val();
+        if(persontypename){
+
+            DWRAMRSComplexObsService.saveAmrsPersonType(persontypename,description,showResponse);
+        }
+
+    }
+
+    function savePersonTypeHandler(){
+
+        var handlerUuid=$j("#ptamrsHandlerId").val();
+        var ptPersonTypeUuid=$j("#ptPersonTypeId").val();
+        if(ptPersonTypeId){
+
+            DWRAMRSComplexObsService.saveAmrsPersontypeHandler(handlerUuid,ptPersonTypeUuid,showResponse);
+        }
+
+    }
 </script>
 </head>
 
@@ -404,17 +539,21 @@ function clearElements(){
 <input name="submitFields" type="button" value="Submit fields"/>
 
 <input name="handlerPerson" type="button" value="Show person table"/>
+<input name="ShowSelectedFields" type="button" value="Save this Person Attributes"/>
+<input type='button' id='submitnewpersonfields' value='Save New Person Fields' />
 <table>
 
     <tr><td>
         <div id="navcontainer">
             <ul id="menulist">
-                <li id="active"><a href="#" id="defaultView">Concepts</a></li>
-                <li><a href="#" id="handlerLink">Add Handler</a></li>
-                <li><a href="#" id="newPersonLink">Add Person</a></li>
-                <li><a href="#">Item three</a></li>
-                <li><a href="#">Item four</a></li>
-                <li><a href="#">Item five</a></li>
+
+                <li><a href="#" id="newhandlerLink">New Handler</a></li>
+                <li><a href="#" id="newPersonTypeLink">Add Person Type</a></li>
+                <li><a href="#" id="newRelatedPersonAttributes">Person Type OpenMRS Attributes</a></li>
+                <li><a href="#" id="personTypeConcepts">Person Type Concepts</a></li>
+                <li><a href="#" id="personTypeHandler">Person Type Handler</a></li>
+                <li><a href="#" id="personTypeOtherAttributes">Other Attributes</a></li>
+
             </ul>
         </div>
     </td><td>
@@ -436,6 +575,15 @@ function clearElements(){
                             <option id="${amrsHandler.uuid}" value="${amrsHandler.uuid}">${amrsHandler.handlerName}</option>
                         </c:forEach>
                     </select></td></tr>
+
+                    <tr><td>Person Type</td>
+                        <td><select name="cmpPersonTypeId" id="cmpPersonTypeId">
+                        <c:forEach var="amrspersonType" items="${listAmrsPersonTypes}" varStatus="ind">
+                            <option id="${amrspersonType.uuid}" value="${amrspersonType.uuid}">${amrspersonType.personTypeName}</option>
+                        </c:forEach>
+                        </select></td>
+                    </tr>
+
                     <tr><td>Select Concept</td><td><wgt:widget id="conceptSearch" name="concept" type="org.openmrs.Concept"/></td></tr>
                     <tr><td>Field Name</td><td><input type="text" id="field_name" name="field_name"/></td></tr>
                     <tr><td>Attribute Name</td><td><input type="text" id="attribute_name" name="attribute_name"/></td></tr>
@@ -446,45 +594,51 @@ function clearElements(){
 
                     <tr><td>&nbsp</td><td><input id="savedata" type="button" value="Save" onclick="saveHandlerFields()"></td></tr>
                 </table>
-                <input name="ShowSelectedFields" type="button" value="Save Person Attribute"/>
+
 
             </fieldset>
 
         </div>
-             <div style="left:100 " id="showHtml">
+
+        <div id="addOtherAttributes">
+            <div><b class="boxHeader">Field Attributes</b>
+
+                <div class="box">
+                    <div id="tools">
+                        Person Type <select name="personTypeId" id="OtherAttriPersonTypeId">
+                        <c:forEach var="amrspersonType" items="${listAmrsPersonTypes}" varStatus="ind">
+                            <option id="${amrspersonType.uuid}" value="${amrspersonType.uuid}">${amrspersonType.personTypeName}</option>
+                        </c:forEach>
+                    </select>
+                    </div>
+
+                    <div id="errors">
+                        <form method="post">
+
+                            <table id="openmrsAttributesTable" cellpadding="8" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>Select</th>
+
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Attribute Type Id</th>
+                                    <th>Description</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="left:100 " id="showHtml">
               </div></td></tr>
 </table>
 
 </form>
-<div><b class="boxHeader">Field Attributes</b>
-
-    <div class="box">
-        <div id="tools">
-            <input id="selectAll" type="checkbox"/> Select All <span class="numDisplayed"></span> in Search Results
-            (including unseen)
-            &nbsp; &nbsp;
-            <button id="reprocessAll" disabled>Include All <span class="numSelected">0</span> Selected Fields</button>
-        </div>
-
-        <div id="errors">
-            <form method="post">
-                <table id="errorTable" cellpadding="8" cellspacing="0">
-                    <thead>
-                    <tr>
-                        <th>Select</th>
-                        <th>Action</th>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Attribute Type Id</th>
-                        <th>Description</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </form>
-        </div>
-    </div>
-</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

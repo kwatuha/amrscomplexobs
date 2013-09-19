@@ -32,6 +32,8 @@ List<Amrscomplexobs> listAmrscomplexobs=service.getAmrscomplexobs();
 @RequestMapping(method=RequestMethod.POST, value="module/amrscomplexobs/amrscomplexobs")
 	public void savePage(
 ModelMap map,
+@RequestParam(required=false, value="handlername") String handlername,
+@RequestParam(required=false, value="handlerdescription") String handlerdescription,
 @RequestParam(required=false, value="voidform") String vvoid,
 @RequestParam(required=false, value="Edit") String  editbtn,
 @RequestParam(required=false, value="void") String  voidbtn,
@@ -39,8 +41,10 @@ ModelMap map,
 
 AmrscomplexobsService service=Context.getService(AmrscomplexobsService.class);
 
-       Amrscomplexobs amrscomplexobs=new Amrscomplexobs();
-		service.saveAmrscomplexobs(amrscomplexobs);
+       /*Amrscomplexobs amrscomplexobs=new Amrscomplexobs();
+         amrscomplexobs.setHandlerName(handlername);
+         amrscomplexobs.setHandlerDescription(handlerdescription);
+		service.saveAmrscomplexobs(amrscomplexobs);*/
 		List<Amrscomplexobs> listAmrscomplexobs=service.getAmrscomplexobs();
 	
 	map.addAttribute("listAmrscomplexobs",listAmrscomplexobs);

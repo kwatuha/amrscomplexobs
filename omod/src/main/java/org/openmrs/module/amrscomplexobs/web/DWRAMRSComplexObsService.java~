@@ -1,0 +1,133 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.openmrs.module.amrscomplexobs.web;
+
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.openmrs.Concept;
+import org.openmrs.FieldType;
+import org.openmrs.Form;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.FormService;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.amrscomplexobs.model.AmrscomplexHandlerFields;
+import org.openmrs.module.amrscomplexobs.model.Amrscomplexconcepthandler;
+import org.openmrs.module.amrscomplexobs.model.ComplexConceptFields;
+import org.openmrs.module.amrscomplexobs.service.AmrscomplexobsService;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+/**
+ *DWR class for AMRS Complex Obs module
+ */
+public class DWRAMRSComplexObsService {
+	
+	private static final Log log = LogFactory.getLog(DWRAMRSComplexObsService.class);
+
+    PersonService personService=Context.getPersonService() ;
+    FormService formService=Context.getFormService() ;
+    ConceptService cservice=Context.getConceptService();
+    AmrscomplexobsService amrsComplexObsservice=Context.getService(AmrscomplexobsService.class);
+
+    public List<PersonAttributeType> getPersonAttributes()  {
+
+
+        List<ComplexConceptFields> listComplexConceptFields=amrsComplexObsservice.getComplexConceptFields();
+        List<FieldType> listFieldTypes=formService.getAllFieldTypes();
+        List<Concept> listConcepts=cservice.getAllConcepts();
+        List<PersonAttributeType> listPersonAttributes=personService.getAllPersonAttributeTypes()  ;
+
+        List<Form> listForms=formService.getAllForms()  ;
+        /*map.addAttribute("listComplexConceptFields",listComplexConceptFields);
+        map.addAttribute("listFieldTypes",listFieldTypes);
+        map.addAttribute("listForms",listForms);
+        map.addAttribute("listConcepts",listConcepts);
+        map.addAttribute("listAttributes",listPersonAttributes);*/
+
+   return listPersonAttributes;
+    }
+
+    public String saveFormFields(Integer fieldType,String conceptName,String tableName,String attributeName,String defaultValue,Boolean selectMultiple,String fieldName,String handlerUuid)   {
+                String results=null;
+                ConceptService cservice=Context.getConceptService();
+                FormService formService=Context.getFormService() ;
+                Concept currentConcept= cservice.getConceptByName(conceptName);
+                FieldType currentFieldType= formService.getFieldType(fieldType);
+
+        AmrscomplexobsService service=Context.getService(AmrscomplexobsService.class);
+        AmrscomplexHandlerFields handlerFields=new AmrscomplexHandlerFields();
+        Amrscomplexconcepthandler handler=service.getAmrscomplexconcepthandlerByUuid(handlerUuid);
+
+        handlerFields.setConcept(currentConcept);
+        handlerFields.setTableName(tableName);
+        handlerFields.setFieldType(currentFieldType);
+        handlerFields.setFieldLocalName(fieldName);
+        handlerFields.setAmrsHandler(handler);
+        handlerFields.setAttributeName(attributeName);
+        handlerFields.setDefaultValue(defaultValue);
+        handlerFields.setSelectMultiple(selectMultiple);
+        service.saveAmrscomplexHandlerFields(handlerFields) ;
+
+        return results+currentConcept.getName()+currentFieldType.getName()+handlerUuid ;
+    }
+
+    public String savePersonAttributes(ArrayList personAttributesList,String handlerUuid){
+     String msg=null;
+        String fieldName=null;
+        String defaultValues=null;
+        Boolean selectMultiple=false;
+       PersonService personService=Context.getPersonService() ;
+        AmrscomplexobsService service=Context.getService(AmrscomplexobsService.class);
+         AmrscomplexHandlerFields handlerFields=new AmrscomplexHandlerFields();
+        
+        
+
+        if(personAttributesList.size()>0) {
+
+            for (int i = 0; i < personAttributesList.size(); i++) {
+                String uuidfound=(String)personAttributesList.get(i);
+                
+                Amrscomplexconcepthandler handler=service.getAmrscomplexconcepthandlerByUuid(handlerUuid);
+                FieldType defaultFieldType= formService.getFieldType(2);
+               
+                PersonAttributeType personAtr =personService.getPersonAttributeTypeByUuid((String)personAttributesList.get(i)) ;
+                defaultValues="$!{patient.getAttribute('"+personAtr.getName()+"').getValue()}" ;
+
+
+
+                    String attributeTypeName= personAtr.getName();
+                    attributeTypeName=attributeTypeName.replace(" ","_");
+                    fieldName= attributeTypeName.toUpperCase();
+                    handlerFields.setId(null);
+                    handlerFields.setTableName("patient");
+                    handlerFields.setFieldType(defaultFieldType);
+                    handlerFields.setFieldLocalName(fieldName);
+                    handlerFields.setAmrsHandler(handler);
+                    handlerFields.setAttributeName(personAtr.getName());
+                    handlerFields.setDefaultValue(defaultValues);
+                    handlerFields.setSelectMultiple(selectMultiple);
+                    service.saveAmrscomplexHandlerFields(handlerFields) ;
+                   handlerFields
+
+
+
+            }
+
+
+        }
+
+
+        return  msg+"RExecuted successfully";
+    }
+
+
+}

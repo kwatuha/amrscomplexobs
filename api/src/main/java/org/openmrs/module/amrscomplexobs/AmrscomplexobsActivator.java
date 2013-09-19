@@ -24,7 +24,7 @@ public class AmrscomplexobsActivator implements Activator {
 	@Override
         public void startup() {
 		log.info("Starting Amrscomplexobs module");
-        Context.getObsService().registerHandler("OutReachNewComplexHandler", new AMRSComplexObsHandler());
+        Context.getObsService().registerHandler("AMRSComplexObsHandler", new AMRSComplexObsHandler());
 	}
 	
 	/* (non-Javadoc)
